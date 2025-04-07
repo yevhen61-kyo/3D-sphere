@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Network Galaxy Explorer</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: linear-gradient(to bottom right, #dde9fb, #cdd9f5);
+      font-family: sans-serif;
+      color: #222;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    .ui {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      color: #111;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .logo {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+    }
+
+    .footer {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 12px;
+      color: #444;
+    }
+
+    .socials {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      color: blue;
+      font-size: 14px;
+    }
+
+    .socials a {
+      color: blue;
+      text-decoration: none;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="ui">Network Galaxy Explorer</div>
+  <img class="logo" src="vaevi-logo.png" alt="VAEVI Logo" width="100" />
+  <div class="footer">&copy; 2025 VAEVI Technologies. All rights reserved.</div>
+  <div class="socials">
+    <a href="#">Twitter</a>
+    <a href="#">LinkedIn</a>
+    <a href="#">GitHub</a>
+  </div>
+
+  <canvas id="galaxy"></canvas>
+
+  <script>
+    const canvas = document.getElementById("galaxy");
+    const ctx = canvas.getContext("2d");
+    let width, height;
+    let particles = [];
+
+    function resize() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    }
+
+    window.addEventListener("resize", resize);
+    resize();
+
+    const count = 100;
+    const connectionDistance = 120;
+
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 1,
+        vy: (Math.random() - 0.5) * 1,
+        r: Math.random() * 6 + 2
+      });
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, width, height);
+
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x < 0 || p.x > width) p.vx *= -1;
+        if (p.y < 0 || p.y > height) p.vy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(100, 130, 255, 0.6)";
+        ctx.fill();
+
+        for (let j = i + 1; j < particles.length; j++) {
+          const q = particles[j];
+          const dx = p.x - q.x;
+          const dy = p.y - q.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < connectionDistance) {
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(q.x, q.y);
+            ctx.strokeStyle = "rgba(100, 130, 255, 0.2)";
+            ctx.stroke();
+          }
+        }
+      }
+
+      requestAnimationFrame(draw);
+    }
+
+    draw();
+  </script>
+</body>
+</html>
